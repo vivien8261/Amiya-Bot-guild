@@ -1,0 +1,11 @@
+amiyabot
+attrdict
+baidu-aip
+dhash
+jieba
+jionlp
+pillow
+pypinyin
+pyyaml
+requests-html
+zhon

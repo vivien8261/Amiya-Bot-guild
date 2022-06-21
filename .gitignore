@@ -1,0 +1,16 @@
+/.idea/
+/__pycache__/
+/build/
+/venv/
+/dist/
+/view/
+/log/
+/database/
+/resource/
+
+.DS_Store
+
+*.pyc
+*.spec
+*.zip
+*.whl

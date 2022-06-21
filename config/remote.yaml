@@ -1,0 +1,10 @@
+remote:
+    cos:
+    wiki: https://static.prts.wiki
+
+bucket:
+    enabled: false
+    region:
+    secret_id:
+    secret_key:
+    bucket_name:
