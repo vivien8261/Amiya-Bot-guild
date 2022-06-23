@@ -3,7 +3,7 @@ import copy
 
 from core import bot, GroupConfig, Message, Chain
 from core.util import find_similar_list, any_match
-from core.resource.arknightsGameData import ArknightsGameData
+from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameDataResource
 
 from .operatorInfo import OperatorInfo
 from .operatorData import OperatorData
@@ -104,7 +104,55 @@ async def operator(data: Message):
 
 @bot.on_message(group_id='operator', keywords=['皮肤', '立绘'], level=2)
 async def _(data: Message):
-    return Chain(data).text(f'抱歉博士，立绘功能升级中……')
+    info = search_info(data.text_words, source_keys=['skin_key', 'name'], text=data.text)
+
+    if not info.name:
+        wait = await data.wait(Chain(data).text('博士，请说明需要查询的干员名'))
+        if not wait or not wait.text:
+            return None
+        info.name = wait.text
+
+    operators = ArknightsGameData().operators
+
+    if info.name not in operators:
+        return Chain(data).text(f'博士，没有找到干员"{info.name}"')
+
+    opt = operators[info.name]
+    skins = opt.skins()
+
+    text = f'博士，这是干员{info.name}的立绘列表\n\n'
+    for index, item in enumerate(skins):
+        text += f'[{index + 1}] %s\n' % item['skin_name']
+    text += '\n回复【序号】查询对应的立绘资料'
+
+    wait = await data.wait(Chain(data).text(text))
+    if wait:
+        r = re.search(r'(\d+)', wait.text_digits)
+        if r:
+            index = abs(int(r.group(1))) - 1
+            if index >= len(skins):
+                index = len(skins) - 1
+
+            skin_item = skins[index]
+
+            text = f'博士，为您找到干员{info.name}的立绘档案：\n\n'
+            text += '系列：' + skin_item['skin_group'] + '\n'
+            text += '名称：' + skin_item['skin_name'] + '\n'
+            text += '获得途径：' + skin_item['skin_source'] + '\n\n'
+            text += skin_item['skin_usage'] + '\n'
+            text += skin_item['skin_content'] + '\n\n'
+            text += skin_item['skin_desc'] + '\n'
+
+            reply = Chain(data).text(text)
+
+            skin_path = await ArknightsGameDataResource.get_skin_file(opt, skin_item)
+
+            if not skin_path:
+                reply.text('\n立绘下载失败……')
+            else:
+                reply.image(skin_path)
+
+            return reply
 
 
 @bot.on_message(group_id='operator', keywords=['模组'], level=2)
