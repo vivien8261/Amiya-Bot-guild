@@ -108,13 +108,13 @@ async def only_name(data: Message):
     return text == '', 2
 
 
-async def direct_check(data: Message):
-    return data.is_direct, 0
-
-
-@bot.on_message(group_id='user', verify=direct_check)
-async def _(data: Message):
-    return Chain(data).text('博士，阿米娅暂时不理解您表达的意思呢，请再清楚描述一下吧~')
+# async def direct_check(data: Message):
+#     return data.is_direct, 0
+#
+#
+# @bot.on_message(group_id='user', verify=direct_check)
+# async def _(data: Message):
+#     return Chain(data).text('博士，阿米娅暂时不理解您表达的意思呢，请再清楚描述一下吧~')
 
 
 @bot.on_message(group_id='user', verify=only_name)
