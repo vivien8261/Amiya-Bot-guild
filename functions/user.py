@@ -79,7 +79,7 @@ def compose_talk_verify(words, names):
 
 
 async def user_info(data: Message):
-    avatar = await download_async(data.message.author.avatar)
+    avatar = await download_async(data.avatar)
     image = 'data:image/jpg;base64,' + base64.b64encode(avatar).decode('ascii')
 
     info = {
