@@ -86,7 +86,7 @@ async def verify(data: Message):
     return res, 2
 
 
-@bot.on_message(verify=verify)
+@bot.on_message(verify=verify, allow_direct=True)
 async def _(data: Message):
     words = sorted(
         jieba.lcut_for_search(data.text),

@@ -1,13 +1,15 @@
 import re
 import copy
 
-from core import bot, Message, Chain
+from core import bot, GroupConfig, Message, Chain
 from core.util import find_similar_list, any_match
 from core.resource.arknightsGameData import ArknightsGameData
 
 from .operatorInfo import OperatorInfo
 from .operatorData import OperatorData
 from .initData import OperatorSearchInfo, InitData
+
+bot.set_group_config(GroupConfig('operator', allow_direct=True))
 
 
 class LoopBreak(Exception):
@@ -100,12 +102,12 @@ async def operator(data: Message):
     return bool(info.name), 2 if info.name != '阿米娅' else 0
 
 
-@bot.on_message(keywords=['皮肤', '立绘'], level=2)
+@bot.on_message(group_id='operator', keywords=['皮肤', '立绘'], level=2)
 async def _(data: Message):
     return Chain(data).text(f'抱歉博士，立绘功能升级中……')
 
 
-@bot.on_message(keywords=['模组'], level=2)
+@bot.on_message(group_id='operator', keywords=['模组'], level=2)
 async def _(data: Message):
     info = search_info(data.text_words, source_keys=['name'], text=data.text)
 
@@ -129,12 +131,12 @@ async def _(data: Message):
         return Chain(data).html('template/operator/operatorModule.html', result)
 
 
-@bot.on_message(keywords=['语音'], level=2)
+@bot.on_message(group_id='operator', keywords=['语音'], level=2)
 async def _(data: Message):
     return Chain(data).text(f'抱歉博士，语音功能暂不可用……')
 
 
-@bot.on_message(keywords=['档案', '资料'], level=2)
+@bot.on_message(group_id='operator', keywords=['档案', '资料'], level=2)
 async def _(data: Message):
     info = search_info(data.text_words, source_keys=['story_key', 'name'], text=data.text)
 
@@ -179,7 +181,7 @@ async def _(data: Message):
         return Chain(data).text(f'博士，没有找到干员{info.name}《{info.story_key}》的档案')
 
 
-@bot.on_message(verify=level_up)
+@bot.on_message(group_id='operator', verify=level_up)
 async def _(data: Message):
     info = search_info(data.text_words, source_keys=['level', 'skill_index', 'name'], text=data.text)
 
@@ -202,7 +204,7 @@ async def _(data: Message):
     return Chain(data).html(template, result)
 
 
-@bot.on_message(verify=operator)
+@bot.on_message(group_id='operator', verify=operator)
 async def _(data: Message):
     info = search_info(data.text_words, source_keys=['name'], text=data.text)
 

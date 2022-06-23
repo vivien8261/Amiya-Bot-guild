@@ -4,7 +4,7 @@ from amiyabot.database import query_to_list
 
 from typing import List
 from core.util import any_match
-from core import log, bot, Message, Chain
+from core import log, bot, GroupConfig, Message, Chain
 from core.resource.arknightsGameData import ArknightsGameData
 from core.database.user import UserInfo, UserGachaInfo
 from core.database.bot import Pool
@@ -22,6 +22,8 @@ re_list = [
     r'\d+连',
     r'\d+抽'
 ]
+
+bot.set_group_config(GroupConfig('gacha', allow_direct=True))
 
 
 def find_once(reg, text):
@@ -51,7 +53,7 @@ def change_pool(item: Pool, user_id=None):
     return '\n'.join(text)
 
 
-@bot.on_message(keywords=['抽', '连', '寻访'], level=3)
+@bot.on_message(group_id='gacha', keywords=['抽', '连', '寻访'], level=3)
 async def _(data: Message):
     try:
         gc = GachaForUser(data)
@@ -105,7 +107,7 @@ async def _(data: Message):
         return reply.text(text)
 
 
-@bot.on_message(keywords=['保底'])
+@bot.on_message(group_id='gacha', keywords=['保底'])
 async def _(data: Message):
     user: UserGachaInfo = UserGachaInfo.get_or_create(user_id=data.user_id)[0]
 
@@ -118,7 +120,7 @@ async def _(data: Message):
     )
 
 
-@bot.on_message(keywords=['卡池', '池子'])
+@bot.on_message(group_id='gacha', keywords=['卡池', '池子'])
 async def _(data: Message):
     all_pools: List[Pool] = Pool.select()
 
@@ -178,7 +180,7 @@ async def _(data: Message):
                 return Chain(data).text('博士，要告诉阿米娅准确的卡池序号哦')
 
 
-@bot.on_message(keywords=['box'])
+@bot.on_message(group_id='gacha', keywords=['box'])
 async def _(data: Message):
     res = get_user_box(data.user_id)
 

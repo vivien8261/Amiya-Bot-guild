@@ -6,11 +6,13 @@ import random
 
 from amiyabot.network.download import download_async
 
-from core import bot, tasks_control, Message, Chain
+from core import bot, tasks_control, GroupConfig, Message, Chain
 from core.util import read_yaml, check_sentence_by_re, any_match
 from core.database.user import User, UserInfo, UserGachaInfo
 
 talking = read_yaml('config/talking.yaml')
+
+bot.set_group_config(GroupConfig('user', allow_direct=True))
 
 
 def get_face():
@@ -106,12 +108,21 @@ async def only_name(data: Message):
     return text == '', 2
 
 
-@bot.on_message(verify=only_name)
+async def direct_check(data: Message):
+    return data.is_direct, 0
+
+
+@bot.on_message(group_id='user', verify=direct_check)
+async def _(data: Message):
+    return Chain(data).text('博士，阿米娅暂时不理解您表达的意思呢，请再清楚描述一下吧~')
+
+
+@bot.on_message(group_id='user', verify=only_name)
 async def _(data: Message):
     return Chain(data).image(random.choice(get_face()))
 
 
-@bot.on_message(verify=compose_talk_verify(talking.talk.positive, talking.call.positive))
+@bot.on_message(group_id='user', verify=compose_talk_verify(talking.talk.positive, talking.call.positive))
 async def _(data: Message):
     user: UserInfo = UserInfo.get_user(data.user_id)
     reply = Chain(data)
@@ -125,7 +136,7 @@ async def _(data: Message):
     return reply.text(text, auto_convert=False)
 
 
-@bot.on_message(verify=compose_talk_verify(talking.talk.inactive, talking.call.positive))
+@bot.on_message(group_id='user', verify=compose_talk_verify(talking.talk.inactive, talking.call.positive))
 async def _(data: Message):
     user: UserInfo = UserInfo.get_user(data.user_id)
     reply = Chain(data)
@@ -139,7 +150,7 @@ async def _(data: Message):
     return reply.text(f'博士为什么要说这种话，阿米娅要生气了！[face:67]（怒气值：{anger}%）')
 
 
-@bot.on_message(keywords=list(talking.call.inactive), check_prefix=False)
+@bot.on_message(group_id='user', keywords=list(talking.call.inactive), check_prefix=False)
 async def _(data: Message):
     bad_word = any_match(data.text, list(talking.call.inactive))
     text = f'哼！Dr.{data.nickname}不许叫人家{bad_word}，不然人家要生气了！'
@@ -150,7 +161,7 @@ async def _(data: Message):
     return reply
 
 
-@bot.on_message(keywords=['早上好', '早安', '中午好', '午安', '下午好', '晚上好'], check_prefix=False)
+@bot.on_message(group_id='user', keywords=['早上好', '早安', '中午好', '午安', '下午好', '晚上好'], check_prefix=False)
 async def _(data: Message):
     hour = talk_time()
     text = ''
@@ -166,12 +177,12 @@ async def _(data: Message):
     return Chain(data).text(text)
 
 
-@bot.on_message(keywords=['晚安'], check_prefix=False)
+@bot.on_message(group_id='user', keywords=['晚安'], check_prefix=False)
 async def _(data: Message):
     return Chain(data).text(f'Dr.{data.nickname}，晚安～')
 
 
-@bot.on_message(keywords=['我错了', '对不起', '抱歉'])
+@bot.on_message(group_id='user', keywords=['我错了', '对不起', '抱歉'])
 async def _(data: Message):
     info: UserInfo = UserInfo.get_user(data.user_id)
 
@@ -184,7 +195,7 @@ async def _(data: Message):
         return reply.text('好吧，阿米娅就当博士刚刚是在开玩笑吧，博士要好好对阿米娅哦[face:21]')
 
 
-@bot.on_message(keywords=['签到'])
+@bot.on_message(group_id='user', keywords=['签到'])
 async def _(data: Message):
     status = sign_in(data, 1)
 
@@ -193,7 +204,7 @@ async def _(data: Message):
     return reply.text(status['text'])
 
 
-@bot.on_message(keywords=['信赖', '关系', '好感', '我的信息', '个人信息'])
+@bot.on_message(group_id='user', keywords=['信赖', '关系', '好感', '我的信息', '个人信息'])
 async def _(data: Message):
     return await user_info(data)
 

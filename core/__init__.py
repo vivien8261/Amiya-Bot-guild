@@ -1,6 +1,6 @@
 import traceback
 
-from amiyabot import MultipleAccounts, AmiyaBot, BotInstance, Message, Chain, log
+from amiyabot import MultipleAccounts, AmiyaBot, BotInstance, GroupConfig, Message, Chain, log
 from core.lib.timedTask import TasksControl
 from core.util import read_yaml
 

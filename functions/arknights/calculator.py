@@ -105,7 +105,7 @@ async def action(data: Message):
     return await calc_result(Chain(wait), wait.text_origin)
 
 
-@bot.on_message(verify=verify)
+@bot.on_message(verify=verify, allow_direct=True)
 async def action(data: Message):
     reply = Chain(data)
 

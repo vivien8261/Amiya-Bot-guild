@@ -92,7 +92,7 @@ async def verify(data: Message):
     return False
 
 
-@bot.on_message(verify=verify)
+@bot.on_message(verify=verify, allow_direct=True)
 async def _(data: Message):
     message = data.text_origin
     words = data.text_words

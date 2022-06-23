@@ -169,7 +169,7 @@ class Recruit:
             return reply.text('博士，没有在图内找到标签信息')
 
 
-@bot.on_message(keywords=['公招', '公开招募'])
+@bot.on_message(keywords=['公招', '公开招募'], allow_direct=True)
 async def _(data: Message):
     if data.image:
         # 直接 OCR 识别图片
@@ -192,6 +192,6 @@ async def _(data: Message):
                 return Chain(data, at=True).text('博士，您没有发送图片哦~')
 
 
-@bot.on_message(verify=auto_discern, check_prefix=False)
+@bot.on_message(verify=auto_discern, check_prefix=False, allow_direct=True)
 async def _(data: Message):
     return await Recruit.action(data, await get_ocr_result(data.image[0]), ocr=True)
