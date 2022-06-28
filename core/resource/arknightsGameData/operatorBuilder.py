@@ -262,6 +262,7 @@ class Operator:
                         skill = building_skills[buff_id]
                         skills.append({
                             'bs_unlocked': item['cond']['phase'],
+                            'bs_icon': skill['skillIcon'],
                             'bs_name': skill['buffName'],
                             'bs_desc': remove_xml_tag(skill['description'])
                         })

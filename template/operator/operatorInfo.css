@@ -190,10 +190,21 @@ body {
     background: rgb(255 255 255 / 50%);
 }
 
+.exInfo.bs > div {
+    padding-top: 5px;
+}
+
 .exInfo:last-child {
     margin-bottom: 10px;
 }
 
 .potential {
     display: flex;
+}
+
+.bs-icon {
+    width: 30px;
+    height: 30px;
+    margin: 0 5px;
+    background: center / 100% no-repeat;
 }

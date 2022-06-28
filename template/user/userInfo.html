@@ -15,8 +15,10 @@
         <div class="background"></div>
         <div class="base-info">
             <div class="avatar">
-                <img :src="data.avatar" :alt="data.nickname">
-                <span>{{ data.nickname }}</span>
+                <div class="avatar-image">
+                    <img :src="data.avatar" :alt="data.nickname">
+                </div>
+                <div class="nickname">{{ data.nickname }}{{ data.nickname }}{{ data.nickname }}</div>
             </div>
             <div class="info">
                 <div>今日{{ data.user_info.sign_in ? '已' : '未' }}签到</div>
