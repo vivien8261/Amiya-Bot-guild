@@ -137,7 +137,7 @@ async def _(data: Message):
             if item.pool_name in message:
                 all_people = False
                 if data.guild_id == '16459499741255637771' and data.is_admin:
-                    all_people = data.is_admin and '所有人' in message
+                    all_people = '所有人' in data.text
 
                 return Chain(data).text_image(change_pool(item, data.user_id if not all_people else None))
 
