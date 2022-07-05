@@ -83,9 +83,9 @@ if __name__ == '__main__':
             break
         except KeyError:
             cache = {}
-            time.sleep(5)
+            time.sleep(10)
             continue
         except Exception as e:
             print(str(e), traceback.format_exc())
-            time.sleep(5)
+            time.sleep(10)
             continue
