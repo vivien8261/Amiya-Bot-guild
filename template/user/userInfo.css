@@ -45,7 +45,7 @@ body {
 .avatar .avatar-image {
     width: 90px;
     height: 90px;
-    padding: 15px;
+    padding: 10px;
     background: url(../../resource/gamedata/item_rarity_img/sprite_item_r6.png) center / 100% no-repeat;
 }
 

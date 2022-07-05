@@ -1,6 +1,7 @@
 import re
 import os
 import sys
+import json
 import time
 import yaml
 import jieba
@@ -380,3 +381,10 @@ def number_with_sign(number: int):
     if number >= 0:
         return '+' + str(number)
     return str(number)
+
+
+def create_test_data(data, path):
+    with open(path, mode='w+', encoding='utf-8') as file:
+        file.write(
+            'const testData = ' + json.dumps(data, ensure_ascii=False)
+        )

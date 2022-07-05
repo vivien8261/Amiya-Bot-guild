@@ -64,11 +64,12 @@
                 let total = 0
                 for (let item of box) {
                     let opt = item.split(':')
+                    let r = parseInt(opt[1])
 
-                    if (!rate[opt[1]]) {
-                        rate[opt[1]] = 0
+                    if (!rate[r]) {
+                        rate[r] = 0
                     }
-                    rate[opt[1]] += parseInt(opt[2])
+                    rate[r] += parseInt(opt[2])
                     total += parseInt(opt[2])
                 }
 
@@ -83,10 +84,19 @@
                     let value = (rate[r] / total * 100).toFixed(2)
                     res.push(
                         {
-                            value: value,
-                            name: `${r}星概率\n${value}%`,
+                            type: 'bar',
+                            name: new Array(parseInt(r)).fill('★').join(''),
+                            data: [value],
                             itemStyle: {
                                 color: colors[r]
+                            },
+                            label: {
+                                show: true,
+                                position: 'right',
+                                formatter: '{a}\n{c}%',
+                                textStyle: {
+                                    fontFamily: 'monospace'
+                                }
                             }
                         }
                     )
@@ -99,8 +109,7 @@
                     this.operatorNum = box.length
                     JsBarcode(this.$refs.barcode, data.user.user_id, {
                         background: 'transparent',
-                        lineColor: 'rgba(255, 255, 255, .5)',
-                        displayValue: false
+                        lineColor: 'rgba(255, 255, 255, .5)'
                     })
                 })
             },
@@ -108,19 +117,42 @@
                 const charts = echarts.init(this.$refs.pie)
                 const option = {
                     animation: false,
-                    series: [
-                        {
-                            type: 'pie',
-                            radius: ['40%', '70%'],
-                            data: data,
-                            minAngle: 10,
-                            itemStyle: {
-                                borderRadius: 4,
-                                borderColor: '#fff',
-                                borderWidth: 1
+                    textStyle: {
+                        fontFamily: 'Harmony'
+                    },
+                    grid: {
+                        top: 10,
+                        left: 10,
+                        right: 50,
+                        bottom: 10,
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'value',
+                        axisLabel: {
+                            color: '#000',
+                            textBorderColor: '#fff',
+                            textBorderWidth: 1,
+                            formatter: '{value}%'
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: 'rgba(255, 255, 255, 0.4)'
                             }
                         }
-                    ]
+                    },
+                    yAxis: {
+                        type: 'category',
+                        data: ['抽卡概率统计'],
+                        axisLabel: {
+                            rotate: 90,
+                            fontSize: 16,
+                            color: '#000',
+                            textBorderColor: '#fff',
+                            textBorderWidth: 1
+                        }
+                    },
+                    series: data
                 }
                 charts.setOption(option)
             }
