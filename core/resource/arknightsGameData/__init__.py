@@ -11,7 +11,10 @@ from .common import ArknightsConfig, JsonData
 from .operatorBuilder import Operator
 from .wiki import PRTS
 
-STAGES = Dict[str, Dict[str, str]]
+STAGES = Tuple[
+    Dict[str, Dict[str, str]],
+    Dict[str, str]
+]
 ENEMIES = Dict[str, Dict[str, dict]]
 OPERATORS = Tuple[
     Dict[str, Operator],
@@ -176,26 +179,67 @@ def init_enemies() -> ENEMIES:
 
 
 def init_stages() -> STAGES:
+    operators_list = JsonData.get_json_data('character_table')
+    enemies_info = JsonData.get_json_data('enemy_handbook_table')
     stage_data = JsonData.get_json_data('stage_table')['stages']
+    item_data = JsonData.get_json_data('item_table')['items']
+
     stage_list = {}
+    stage_map = {}
 
     for stage_id, item in stage_data.items():
-        if '#f#' not in stage_id and item['name']:
-            stage_list[stage_id] = {
-                'stage_id': stage_id,
-                'stage_code': item['code'],
-                'stage_name': item['name']
-            }
+        level_data = JsonData.get_json_data((item['levelId'] or 'no_level').lower(), folder='levels')
 
-    return stage_list
+        level = ''
+        if '#f#' in stage_id:
+            level = '_hard'
+        if 'easy' in stage_id:
+            level = '_easy'
+        if 'tough' in stage_id:
+            level = '_tough'
+
+        stage_key = item['code'] + level
+
+        if level_data:
+            enemies = {}
+            for wave in level_data['waves']:
+                for fragment in wave['fragments']:
+                    for action in fragment['actions']:
+                        if action['key'] not in enemies_info or action['actionType'] != 0:
+                            continue
+                        if action['key'] not in enemies:
+                            enemies[action['key']] = {
+                                **enemies_info[action['key']],
+                                'count': 0
+                            }
+                        enemies[action['key']]['count'] += action['count']
+
+            level_data['enemiesCount'] = enemies
+
+        if item['stageDropInfo']:
+            if item['stageDropInfo']['displayDetailRewards']:
+                for info in item['stageDropInfo']['displayDetailRewards']:
+                    if info['type'] == 'CHAR':
+                        info['detail'] = operators_list[info['id']]
+                    else:
+                        if info['id'] in item_data:
+                            info['detail'] = item_data[info['id']]
+
+        stage_list[stage_id] = {
+            **item,
+            'levelData': level_data
+        }
+        stage_map[stage_key] = stage_id
+
+    return stage_list, stage_map
 
 
 class ArknightsGameData(metaclass=Singleton):
     def __init__(self):
         log.info('initialize ArknightsGameData...')
 
-        self.stages = init_stages()
         self.enemies = init_enemies()
+        self.stages, self.stages_map = init_stages()
         self.operators, self.birthday = init_operators()
         self.materials, self.materials_map, self.materials_made, self.materials_source = init_materials()
 

@@ -3,4 +3,5 @@ from . import (gacha,
                calculator,
                enemy,
                material,
-               recruit)
+               recruit,
+               stage)

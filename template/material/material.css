@@ -111,18 +111,19 @@ body {
 .source-detail > div {
     width: 50%;
     display: flex;
-    margin: 3px 0;
+    margin: 5px 0;
+}
+
+.source-detail > div > div {
+    margin-right: 5px;
 }
 
 .source-detail > div > div:nth-child(1) {
-    width: 60px;
+    width: 70px;
+    text-align: right;
 }
 
-.source-detail > div > div:nth-child(2) {
-    width: 150px;
-}
-
-.source-detail > div > div:nth-child(3) {
+.source-detail > div > div:nth-child(1) > span {
     padding: 2px 5px;
     border-radius: 4px;
 }

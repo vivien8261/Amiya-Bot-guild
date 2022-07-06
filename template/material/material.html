@@ -11,7 +11,7 @@
 </head>
 <body>
 <div id="template">
-    <div style="display: flex;align-items: center;">
+    <div v-if="Object.keys(data).length" style="display: flex;align-items: center;">
         <img style="width: 100px;margin-right: 20px"
              :src="'../../resource/gamedata/item/' + data.info.material_icon + '.png'" alt="material">
         <div class="material-name">
@@ -38,9 +38,11 @@
                 <div class="sub_title">主线掉落</div>
                 <div class="source-detail">
                     <div v-for="item in data.source.main">
-                        <div>{{ item.stage_code }}</div>
-                        <div>{{ item.stage_name }}</div>
-                        <div :rate="item.rate">{{ item.rate }}</div>
+                        <div>
+                            <span :rate="item.rate">{{ item.rate }}</span>
+                        </div>
+                        <div>{{ item.code }}</div>
+                        <div>{{ item.name }}</div>
                     </div>
                 </div>
             </div>
@@ -48,9 +50,11 @@
                 <div class="sub_title">活动掉落</div>
                 <div class="source-detail">
                     <div v-for="item in data.source.act">
-                        <div>{{ item.stage_code }}</div>
-                        <div>{{ item.stage_name }}</div>
-                        <div :rate="item.rate">{{ item.rate }}</div>
+                        <div>
+                            <span :rate="item.rate">{{ item.rate }}</span>
+                        </div>
+                        <div>{{ item.code }}</div>
+                        <div>{{ item.name }}</div>
                     </div>
                 </div>
             </div>

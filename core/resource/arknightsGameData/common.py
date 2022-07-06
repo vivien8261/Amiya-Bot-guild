@@ -1,3 +1,4 @@
+import os
 import json
 
 from core.database.bot import GachaConfig
@@ -30,8 +31,11 @@ class JsonData:
     @classmethod
     def get_json_data(cls, name, folder='excel'):
         if name not in cls.cache:
-            with open(f'resource/gamedata/gamedata/{folder}/{name}.json',
-                      mode='r',
-                      encoding='utf-8') as src:
-                cls.cache[name] = json.load(src)
+            path = f'resource/gamedata/gamedata/{folder}/{name}.json'
+            if os.path.exists(path):
+                with open(path, mode='r', encoding='utf-8') as src:
+                    cls.cache[name] = json.load(src)
+            else:
+                return {}
+
         return cls.cache[name]
