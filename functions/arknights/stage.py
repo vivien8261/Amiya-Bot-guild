@@ -25,12 +25,16 @@ async def _(data: Message):
         data.text_initial.upper().replace(' ', '')
     )
     level = ''
+    level_str = ''
     if any_match(data.text, ['突袭']):
         level = '_hard'
+        level_str = '（突袭）'
     if any_match(data.text, ['简单', '剧情']):
         level = '_easy'
+        level_str = '（剧情）'
     if any_match(data.text, ['困难', '磨难']):
         level = '_tough'
+        level_str = '（磨难）'
 
     stage_id = None
     stages_map = ArknightsGameData().stages_map
@@ -41,6 +45,11 @@ async def _(data: Message):
             stage_id = stages_map[stage_key]
 
     if stage_id:
-        return Chain(data).html('template/stage/stage.html', ArknightsGameData().stages[stage_id])
+        stage_data = ArknightsGameData().stages[stage_id]
+        res = {
+            **stage_data,
+            'name': stage_data['name'] + level_str
+        }
+        return Chain(data).html('template/stage/stage.html', res)
     else:
         return Chain(data).text('抱歉博士，没有查询到相关地图信息')
