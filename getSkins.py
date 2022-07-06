@@ -6,6 +6,7 @@ import urllib.parse
 from fake_useragent import UserAgent
 from requests_html import HTMLSession, HTML
 from amiyabot.network.download import download_sync
+from amiyabot import log
 from core.resource.arknightsGameData import ArknightsGameData
 
 ua = UserAgent()
@@ -25,7 +26,7 @@ def get_skin_map():
 
 
 def get_char_wiki(name):
-    print(f'requesting wiki for {name}...')
+    log.info(f'requesting wiki for {name}...')
 
     html: HTML = session.get(f'http://prts.wiki/w/{name}', headers={'User-Agent': ua.random}).html
 
@@ -44,6 +45,8 @@ def get_char_wiki(name):
             continue
 
         stage_map[stage_id] = url
+
+    log.info(f'save map: {stage_map}')
 
     return stage_map
 
@@ -70,7 +73,7 @@ def start():
                 stage_map = cache[char_id]
                 url = stage_map[item['skin_key']]
 
-                res = download_sync(f'http:{url}')
+                res = download_sync(f'http:{url}', progress=True)
                 if res:
                     with open(skin_path, mode='wb') as f:
                         f.write(res)
@@ -81,11 +84,12 @@ if __name__ == '__main__':
         try:
             start()
             break
-        except KeyError:
+        except KeyError as e:
             cache = {}
             time.sleep(10)
+            log.error(repr(e))
             continue
         except Exception as e:
-            print(str(e), traceback.format_exc())
+            log.error(e)
             time.sleep(10)
             continue
