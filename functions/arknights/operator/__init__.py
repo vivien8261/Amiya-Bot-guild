@@ -119,7 +119,7 @@ async def _(data: Message):
 
     opt = operators[info.name]
     skins = opt.skins()
-    index = get_index_from_text(data.text_digits, skins)
+    index = get_index_from_text(data.text, skins)
 
     if index is None:
         text = f'博士，这是干员{info.name}的立绘列表\n\n'
@@ -189,7 +189,7 @@ async def _(data: Message):
     opt = operators[info.name]
     stories = opt.stories()
     stories_map = {item['story_title']: item['story_text'] for item in stories}
-    index = get_index_from_text(data.text_digits, stories)
+    index = get_index_from_text(data.text, stories)
 
     if not info.story_key and index is None:
         text = f'博士，这是干员{opt.name}的档案列表\n\n'
