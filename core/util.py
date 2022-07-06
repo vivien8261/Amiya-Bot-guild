@@ -107,6 +107,16 @@ def any_match(text: str, items: list):
             return item
 
 
+def get_index_from_text(text: str, array: list):
+    r = re.search(r'(\d+)', text)
+    if r:
+        index = abs(int(r.group(1))) - 1
+        if index >= len(array):
+            index = len(array) - 1
+
+        return index
+
+
 def random_pop(items: list):
     return items.pop(random.randrange(0, len(items)))
 

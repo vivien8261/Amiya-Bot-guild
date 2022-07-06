@@ -2,7 +2,7 @@ import re
 import copy
 
 from core import bot, GroupConfig, Message, Chain
-from core.util import find_similar_list, any_match
+from core.util import find_similar_list, any_match, get_index_from_text
 from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameDataResource
 
 from .operatorInfo import OperatorInfo
@@ -119,40 +119,27 @@ async def _(data: Message):
 
     opt = operators[info.name]
     skins = opt.skins()
+    index = get_index_from_text(data.text_digits, skins)
 
-    text = f'博士，这是干员{info.name}的立绘列表\n\n'
-    for index, item in enumerate(skins):
-        text += f'[{index + 1}] %s\n' % item['skin_name']
-    text += '\n回复【序号】查询对应的立绘资料'
+    if index is None:
+        text = f'博士，这是干员{info.name}的立绘列表\n\n'
+        for index, item in enumerate(skins):
+            text += f'[{index + 1}] %s\n' % item['skin_name']
+        text += '\n回复【序号】查询对应的立绘资料'
 
-    wait = await data.wait(Chain(data).text(text))
-    if wait:
-        r = re.search(r'(\d+)', wait.text_digits)
-        if r:
-            index = abs(int(r.group(1))) - 1
-            if index >= len(skins):
-                index = len(skins) - 1
+        wait = await data.wait(Chain(data).text(text))
+        if wait:
+            index = get_index_from_text(wait.text_digits, skins)
 
-            skin_item = skins[index]
+    if index is not None:
+        skin_item = skins[index]
+        skin_data = {
+            'name': info.name,
+            'data': skin_item,
+            'path': await ArknightsGameDataResource.get_skin_file(opt, skin_item)
+        }
 
-            text = f'博士，为您找到干员{info.name}的立绘档案：\n\n'
-            text += '系列：' + skin_item['skin_group'] + '\n'
-            text += '名称：' + skin_item['skin_name'] + '\n'
-            text += '获得途径：' + skin_item['skin_source'] + '\n\n'
-            text += skin_item['skin_usage'] + '\n'
-            text += skin_item['skin_content'] + '\n\n'
-            text += skin_item['skin_desc'] + '\n'
-
-            reply = Chain(data).text(text)
-
-            skin_path = await ArknightsGameDataResource.get_skin_file(opt, skin_item)
-
-            if not skin_path:
-                reply.text('\n立绘下载失败……')
-            else:
-                reply.image(skin_path)
-
-            return reply
+        return Chain(data).html('template/operator/operatorSkin.html', skin_data)
 
 
 @bot.on_message(group_id='operator', keywords=['模组'], level=2)
@@ -202,9 +189,9 @@ async def _(data: Message):
     opt = operators[info.name]
     stories = opt.stories()
     stories_map = {item['story_title']: item['story_text'] for item in stories}
+    index = get_index_from_text(data.text_digits, stories)
 
-    if not info.story_key:
-
+    if not info.story_key and index is None:
         text = f'博士，这是干员{opt.name}的档案列表\n\n'
         for index, item in enumerate(stories):
             text += f'[{index + 1}] %s\n' % item['story_title']
@@ -212,13 +199,10 @@ async def _(data: Message):
 
         wait = await data.wait(Chain(data).text(text))
         if wait:
-            r = re.search(r'(\d+)', wait.text_digits)
-            if r:
-                index = abs(int(r.group(1))) - 1
-                if index >= len(stories):
-                    index = len(stories) - 1
+            index = get_index_from_text(wait.text_digits, stories)
 
-                info.story_key = stories[index]['story_title']
+    if index is not None:
+        info.story_key = stories[index]['story_title']
 
     if not info.story_key:
         return None

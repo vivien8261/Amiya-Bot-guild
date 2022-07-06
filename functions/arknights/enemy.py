@@ -2,7 +2,7 @@ import re
 import jieba
 
 from core import log, bot, Message, Chain, exec_before_init
-from core.util import integer, any_match
+from core.util import integer, any_match, get_index_from_text
 from core.resource.arknightsGameData import ArknightsGameData
 
 line_height = 16
@@ -127,12 +127,8 @@ async def _(data: Message):
             wait = await data.wait(
                 Chain(data).html('template/enemy/enemyIndex.html', init_data).text('回复【序号】查询对应的敌方单位资料'))
             if wait:
-                r = re.search(r'(\d+)', wait.text_digits)
-                if r:
-                    index = abs(int(r.group(1))) - 1
-                    if index >= len(result):
-                        index = len(result) - 1
-
+                index = get_index_from_text(wait.text_digits, result)
+                if index:
                     return Chain(data).html('template/enemy/enemy.html', Enemy.get_enemy(result[index][0]))
         else:
             return Chain(data).text('博士，没有找到敌方单位%s的资料呢 >.<' % enemy_name)

@@ -207,16 +207,7 @@ class ArknightsGameDataResource:
         skin_path = f'resource/skin/{operator.id}/{skin_file}'
 
         if not os.path.exists(skin_path):
-            create_dir(skin_path, is_file=True)
-
-            cos_url = f'{resource_config.remote.cos}/skins/{operator.id}/{skin_file}'
-
-            res = await download_async(cos_url)
-            if res:
-                with open(skin_path, mode='wb+') as f:
-                    f.write(res)
-            else:
-                return None
+            return None
         return skin_path
 
     @classmethod
