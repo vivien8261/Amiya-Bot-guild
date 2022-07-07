@@ -202,6 +202,7 @@ def init_stages() -> STAGES:
             level = '_tough'
 
         stage_key = item['code'] + level
+        stage_key_name = remove_punctuation(item['name']) + level
 
         if level_data:
             enemies = {}
@@ -233,7 +234,7 @@ def init_stages() -> STAGES:
             'levelData': level_data
         }
         stage_map[stage_key] = stage_id
-        stage_map[remove_punctuation(item['name'])] = stage_id
+        stage_map[stage_key_name] = stage_id
 
     return stage_list, stage_map
 
