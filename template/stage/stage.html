@@ -8,6 +8,7 @@
     <link type="text/css" rel="styleSheet" href="../assets/font/font.css"/>
     <link type="text/css" rel="styleSheet" href="stage.css"/>
     <title>template</title>
+    <script src="../../log/stage.js"></script>
 </head>
 <body>
 <div id="template">
@@ -38,12 +39,11 @@
             <div class="enemy-info">
                 <div class="enemy-item" v-for="(item, enemyId) in enemies">
                     <div class="enemy-avatar"
-                         :style="{backgroundImage: `url('../../resource/gamedata/enemy/${enemyId}.png')`}"></div>
+                         :style="{backgroundImage: `url('../../resource/gamedata/enemy/${enemyId}.png')`}">
+                        <span class="tag" :class="item.enemyLevel">{{ level[item.enemyLevel] }}</span>
+                    </div>
                     <div style="padding: 10px 5px">
-                        <div style="display: flex">
-                            <div style="color: #ff6900">{{ item.name }}</div>
-                            <span class="tag" :class="item.enemyLevel">{{ level[item.enemyLevel] }}</span>
-                        </div>
+                        <div style="color: #ff6900">{{ item.name }}</div>
                         <div>{{ item.attackType }}</div>
                         <div>数量：{{ item.count }}</div>
                     </div>
@@ -123,6 +123,7 @@
         },
         mounted() {
             window.init = this.init
+            init(testData)
         }
     })
 </script>
