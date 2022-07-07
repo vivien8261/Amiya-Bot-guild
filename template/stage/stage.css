@@ -76,3 +76,21 @@ body {
 .item-icon {
     width: 60px;
 }
+
+.tag {
+    padding: 0 5px;
+    border-radius: 2px;
+    margin-left: 5px;
+}
+
+.tag.NORMAL {
+    background: #3cb300;
+}
+
+.tag.ELITE {
+    background: #6f00b3;
+}
+
+.tag.BOSS {
+    background: #c30000;
+}

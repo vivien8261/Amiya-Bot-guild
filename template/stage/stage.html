@@ -8,6 +8,7 @@
     <link type="text/css" rel="styleSheet" href="../assets/font/font.css"/>
     <link type="text/css" rel="styleSheet" href="stage.css"/>
     <title>template</title>
+    <script src="../../log/stage.js"></script>
 </head>
 <body>
 <div id="template">
@@ -40,7 +41,10 @@
                     <div class="enemy-avatar"
                          :style="{backgroundImage: `url('../../resource/gamedata/enemy/${enemyId}.png')`}"></div>
                     <div style="padding: 10px 5px">
-                        <div style="color: #ff6900">{{ item.name }}</div>
+                        <div style="display: flex">
+                            <div style="color: #ff6900">{{ item.name }}</div>
+                            <span class="tag" :class="item.enemyLevel">{{ level[item.enemyLevel] }}</span>
+                        </div>
                         <div>{{ item.attackType }}</div>
                         <div>数量：{{ item.count }}</div>
                     </div>
@@ -110,11 +114,18 @@
                     't2': '常规掉落',
                     't4': '额外掉落'
                 },
+                level: {
+                    'NORMAL': '普通',
+                    'ELITE': '精英',
+                    'BOSS': 'BOSS',
+                },
                 hasMap: true
             }
         },
         mounted() {
             window.init = this.init
+
+            init(testData)
         }
     })
 </script>
