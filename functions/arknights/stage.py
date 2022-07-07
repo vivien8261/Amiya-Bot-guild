@@ -1,7 +1,7 @@
 import jieba
 
 from core import log, bot, Message, Chain, exec_before_init
-from core.util import any_match
+from core.util import any_match, remove_punctuation
 from core.resource.arknightsGameData import ArknightsGameData
 
 
@@ -19,11 +19,12 @@ class Stage:
         jieba.load_userdict('resource/stages.txt')
 
 
-@bot.on_message(keywords=['地图', '关卡'], allow_direct=True)
+@bot.on_message(keywords=['地图', '关卡'], allow_direct=True, level=5)
 async def _(data: Message):
     words = jieba.lcut(
-        data.text_initial.upper().replace(' ', '')
+        remove_punctuation(data.text_initial, ['-']).upper().replace(' ', '')
     )
+
     level = ''
     level_str = ''
     if any_match(data.text, ['突袭']):

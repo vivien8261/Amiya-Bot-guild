@@ -237,10 +237,12 @@ def remove_dir(path: str):
     return path
 
 
-def remove_punctuation(text: str):
-    for i in punctuation:
-        text = text.replace(i, '')
-    for i in punctuation_cn:
+def remove_punctuation(text: str, ignore: list = None):
+    punc = punctuation + punctuation_cn
+    if ignore:
+        for i in ignore:
+            punc = punc.replace(i, '')
+    for i in punc:
         text = text.replace(i, '')
     return text
 

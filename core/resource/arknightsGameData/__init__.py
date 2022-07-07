@@ -188,6 +188,9 @@ def init_stages() -> STAGES:
     stage_map = {}
 
     for stage_id, item in stage_data.items():
+        if not item['name']:
+            continue
+
         level_data = JsonData.get_json_data((item['levelId'] or 'no_level').lower(), folder='levels')
 
         level = ''
@@ -230,6 +233,7 @@ def init_stages() -> STAGES:
             'levelData': level_data
         }
         stage_map[stage_key] = stage_id
+        stage_map[remove_punctuation(item['name'])] = stage_id
 
     return stage_list, stage_map
 

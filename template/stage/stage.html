@@ -28,7 +28,7 @@
                 <div v-html="description(data.description)"></div>
             </div>
             <div class="stage-map">
-                <img :src="`../../resource/maps/${data.stageId.replace(/#f#/g, '')}.png`" :alt="data.stageId"
+                <img :src="`../../resource/gamedata/map/${data.stageId.replace(/#f#/g, '')}.png`" :alt="data.stageId"
                      v-if="hasMap"
                      onerror="hideImage()">
             </div>
