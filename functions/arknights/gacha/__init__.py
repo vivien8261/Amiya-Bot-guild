@@ -1,11 +1,9 @@
 import re
-
-from amiyabot.database import query_to_list
+import os
 
 from typing import List
 from core.util import any_match
 from core import log, bot, GroupConfig, Message, Chain
-from core.resource.arknightsGameData import ArknightsGameData
 from core.database.user import UserInfo, UserGachaInfo
 from core.database.bot import Pool
 
@@ -40,6 +38,12 @@ def change_pool(item: Pool, user_id=None):
     )
     task.execute()
 
+    pic = []
+    for root, dirs, files in os.walk('resource/pool'):
+        for file in files:
+            if item.pool_name in file:
+                pic.append(os.path.join(root, file))
+
     text = [
         f'{"所有" if not user_id else ""}博士的卡池已切换为{"【限定】" if item.limit_pool != 0 else ""}【{item.pool_name}】\n'
     ]
@@ -50,7 +54,7 @@ def change_pool(item: Pool, user_id=None):
     if item.pickup_4:
         text.append('[[cl ☆☆☆☆@#A288B5 cle]　　] %s' % item.pickup_4.replace(',', '、'))
 
-    return '\n'.join(text)
+    return '\n'.join(text), pic[-1] if pic else ''
 
 
 @bot.on_message(group_id='gacha', keywords=['抽', '连', '寻访'], level=3)
@@ -139,12 +143,10 @@ async def _(data: Message):
                 if data.guild_id == '16459499741255637771' and data.is_admin:
                     all_people = '所有人' in data.text
 
-                return Chain(data).text_image(change_pool(item, data.user_id if not all_people else None))
-
-    init_data = {
-        'avatars': {name: item.id for name, item in ArknightsGameData().operators.items()},
-        'pools': query_to_list(all_pools)
-    }
+                change_res = change_pool(item, data.user_id if not all_people else None)
+                if change_res[1]:
+                    return Chain(data).image(change_res[1]).text_image(change_res[0])
+                return Chain(data).text_image(change_res[0])
 
     text = '博士，这是可更换的卡池列表：\n\n'
     pools = []
@@ -179,7 +181,10 @@ async def _(data: Message):
         if r:
             index = int(r.group(1)) - 1
             if 0 <= index < len(all_pools):
-                return Chain(data).text_image(change_pool(all_pools[index], data.user_id))
+                change_res = change_pool(all_pools[index], data.user_id)
+                if change_res[1]:
+                    return Chain(data).image(change_res[1]).text_image(change_res[0])
+                return Chain(data).text_image(change_res[0])
             else:
                 return Chain(data).text('博士，要告诉阿米娅准确的卡池序号哦')
 
