@@ -79,7 +79,7 @@
                     <td>{{ item.name }}</td>
                     <td>{{ stageType[item.stageType] }}</td>
                     <td>{{ item.apCost }}</td>
-                    <td>{{ item.rate * 100 }}%</td>
+                    <td>{{ (item.rate * 100).toFixed(2) }}%</td>
                     <td>{{ parseInt(item.desired) }}</td>
                     <td>{{ remark(item.stageType) }}</td>
                 </tr>
