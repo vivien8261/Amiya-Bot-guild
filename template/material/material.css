@@ -155,3 +155,15 @@ body {
     margin-bottom: 20px;;
     font-size: 20px;
 }
+
+.recommend-table td {
+    padding: 5px 10px;
+}
+
+.recommend-table tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.recommend-table tr.recommend-stage:nth-child(-n+4) {
+    color: #66bb6a;
+}

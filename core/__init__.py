@@ -1,6 +1,7 @@
 import traceback
 
 from amiyabot import MultipleAccounts, AmiyaBot, BotInstance, GroupConfig, Message, Chain, log
+from core.resource.arknightsGameData.penguin import save_penguin_data
 from core.lib.timedTask import TasksControl
 from core.util import read_yaml
 
@@ -13,7 +14,8 @@ bot = MultipleAccounts(
 )
 tasks_control = TasksControl()
 init_task = [
-    tasks_control.run_tasks()
+    tasks_control.run_tasks(),
+    save_penguin_data()
 ]
 
 bot.prefix_keywords = read_yaml('config/talking.yaml').call.positive

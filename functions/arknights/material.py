@@ -1,8 +1,10 @@
 import jieba
 
 from typing import List
+
 from core import log, bot, Message, Chain, exec_before_init
 from core.util import read_yaml, any_match, find_similar_list
+from core.database.bot import db
 from core.resource.arknightsGameData import ArknightsGameData
 
 setting = read_yaml('config/arknights.yaml').materialSetting
@@ -53,6 +55,9 @@ class MaterialData:
         material = game_data.materials[game_data.materials_map[name]]
         material_id = material['material_id']
 
+        select_sql = f'SELECT stageId, quantity / times AS rate FROM penguin_data WHERE itemId = {material_id} ORDER BY rate DESC LIMIT 10'
+        penguin_data = db.execute_sql(select_sql).fetchall()
+
         result = {
             'name': name,
             'info': material,
@@ -60,22 +65,48 @@ class MaterialData:
             'source': {
                 'main': [],
                 'act': []
-            }
+            },
+            'recommend': []
         }
 
         if material_id in game_data.materials_source:
             source = game_data.materials_source[material_id]
 
             for code in source.keys():
-                stage = {
-                    **game_data.stages[code],
+                stage = game_data.stages[code]
+                info = {
+                    'code': stage['code'],
+                    'name': stage['name'],
                     'rate': setting.rate[source[code]['source_rate']]
                 }
 
                 if 'main' in code:
-                    result['source']['main'].append(stage)
+                    result['source']['main'].append(info)
                 else:
-                    result['source']['act'].append(stage)
+                    result['source']['act'].append(info)
+
+        if penguin_data:
+            recommend = []
+            for item in penguin_data:
+                stage_id = item[0].rstrip('_perm')
+                rate = float(item[1])
+
+                if stage_id not in game_data.stages:
+                    continue
+
+                stage = game_data.stages[stage_id]
+
+                recommend.append({
+                    'stageId': stage_id,
+                    'stageType': stage['stageType'],
+                    'apCost': stage['apCost'],
+                    'code': stage['code'],
+                    'name': stage['name'] + ('（磨难）' if 'tough' in stage_id else ''),
+                    'rate': rate,
+                    'desired': stage['apCost'] / rate
+                })
+
+            result['recommend'] = sorted(recommend, key=lambda n: n['desired'])
 
         return result
 

@@ -9,6 +9,7 @@ from amiyabot.network.download import download_async
 from core import bot, tasks_control, GroupConfig, Message, Chain
 from core.util import read_yaml, check_sentence_by_re, any_match
 from core.database.user import User, UserInfo, UserGachaInfo
+from core.resource.arknightsGameData.penguin import save_penguin_data
 
 talking = read_yaml('config/talking.yaml')
 
@@ -255,4 +256,7 @@ async def _():
     mint = now.tm_min
 
     if hour == 4 and mint == 0:
+        # 重置用户每日信息
         UserInfo.update(sign_in=0, user_mood=15, jade_point_max=0).execute()
+        # 刷新企鹅物流数据
+        await save_penguin_data()

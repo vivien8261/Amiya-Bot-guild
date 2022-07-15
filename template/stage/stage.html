@@ -16,13 +16,13 @@
         <div class="stage-info">
             <div>
                 <div class="info-detail">
-                    <div>所属：{{ data.stageType }}</div>
-                    <div>难度：{{ data.difficulty }}</div>
+                    <div>所属：{{ stageType[data.stageType] }}</div>
+                    <div>难度：{{ difficulty[data.difficulty] }}</div>
                     <div>推荐等级：{{ data.dangerLevel }}</div>
                     <div>消耗理智：{{ data.apCost }}</div>
-                    <div>部署上限：{{ data.levelData.options.characterLimit }}</div>
-                    <div>目标耐久：{{ data.levelData.options.maxLifePoint }}</div>
-                    <div>初始费用：{{ data.levelData.options.initialCost }}/{{ data.levelData.options.maxCost }}</div>
+                    <div>部署上限：{{ levelOptions.characterLimit }}</div>
+                    <div>目标耐久：{{ levelOptions.maxLifePoint }}</div>
+                    <div>初始费用：{{ levelOptions.initialCost }}/{{ levelOptions.maxCost }}</div>
                 </div>
                 <br>
                 <div v-html="description(data.description)"></div>
@@ -49,7 +49,7 @@
                 </div>
             </div>
         </template>
-        <template v-if="data.stageDropInfo.displayDetailRewards">
+        <template v-if="data.stageDropInfo.displayDetailRewards.length">
             <div class="section-title" style="color: #42a5f5">材料掉落详情</div>
             <div class="drop-info" v-for="(name, type) in dropType" v-if="displayDetailRewards(type).length">
                 <div>{{ name }}</div>
@@ -87,6 +87,9 @@
                     enemies[key] = this.data.levelData.enemiesCount[key]
                 }
                 return enemies
+            },
+            levelOptions() {
+                return this.data.levelData.options ? this.data.levelData.options : {}
             }
         },
         methods: {
@@ -116,6 +119,19 @@
                     'NORMAL': '普通',
                     'ELITE': '精英',
                     'BOSS': 'BOSS',
+                },
+                stageType: {
+                    'MAIN': '主线',
+                    'SUB': '支线',
+                    'SPECIAL_STORY': '故事集',
+                    'DAILY': '日常',
+                    'ACTIVITY': '活动',
+                    'CAMPAIGN': '剿灭',
+                    'CLIMB_TOWER': '保全派驻'
+                },
+                difficulty: {
+                    'NORMAL': '普通',
+                    'FOUR_STAR': '突袭'
                 },
                 hasMap: true
             }
